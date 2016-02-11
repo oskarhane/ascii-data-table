@@ -1,0 +1,21 @@
+{
+  "name": "ascii-tables",
+  "version": "1.0.0",
+  "description": "Render data in a width adjustable ascii table.",
+  "main": "index.js",
+  "scripts": {
+    "build": "./node_modules/.bin/babel --presets babel-preset-es2015 -d lib/ src/",
+    "prepublish": "npm run compile",
+    "test": "./node_modules/.bin/standard && npm run build && mocha --compilers js:babel-core/register",
+    "test:watch": "npm test -- --watch"
+  },
+  "author": "Oskar Hane",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.5.1",
+    "babel-core": "^6.5.1",
+    "babel-preset-es2015": "^6.5.0",
+    "mocha": "^2.4.5",
+    "standard": "^6.0.4"
+  }
+}
