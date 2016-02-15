@@ -2,7 +2,7 @@
   "name": "ascii-data-table",
   "version": "1.0.0",
   "description": "Render data in a width adjustable ascii table.",
-  "main": "index.js",
+  "main": "lib/ascii-data-table",
   "scripts": {
     "build": "./node_modules/.bin/standard && npm run build:node && npm run build:browser",
     "build:node": "./node_modules/.bin/babel src/ascii-data-table.js --out-file lib/ascii-data-table.js --source-maps",
@@ -13,7 +13,15 @@
     "test": "./node_modules/.bin/standard && npm run test:node && npm run test:browser",
     "test:watch": "onchange 'src/**/*.js' 'test/**/*-test.js' -- npm run test"
   },
-  "author": "Oskar Hane",
+  "author": {
+    "name":"Oskar Hane",
+    "email": "npm@oskarhane.com"
+  },
+  "homepage": "http://oskarhane.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oskarhane/ascii-data-table.git"
+  },
   "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.5.1",
@@ -33,5 +41,13 @@
     "phantomjs-prebuilt": "^2.1.4",
     "standard": "^6.0.4",
     "webpack": "^1.12.13"
-  }
+  },
+  "keywords": [
+    "ascii table",
+    "ascii",
+    "text table",
+    "copy data",
+    "table data",
+    "draw ascii"
+  ]
 }
