@@ -1,2 +1,2 @@
 import AsciiTable from '../src/ascii-tables'
-export default AsciiTable
+window.AsciiTable = AsciiTable
