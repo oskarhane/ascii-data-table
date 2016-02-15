@@ -32,6 +32,13 @@ With default max width, the above would produce:
 +-------------------+-------------------+
 ```
 
+## Installation
+Install with `npm` in your working directory:
+
+```
+npm install ascii-data-table
+```
+
 ## Usage
 Two packages are produced, one for [Node.js](https://nodejs.org/en/) environment and one for web browsers.
 
@@ -45,7 +52,7 @@ Usage in Node.js varies depending if the will be used within a ES2015 applicatio
 import AsciiTable from ascii-data-table'
 
 // or if installed by cloning git repo, use the correct path
-import AsciiTable from '../src/ascii-data-table'
+//import AsciiTable from '../lib/ascii-data-table'
 
 // The data to render
 const items = [['x', 'y'], ['a', 'b'], ['c', 'd']]
@@ -58,10 +65,10 @@ const res = AsciiTable.run(items)
 
 ```
 // If install with npm
-var AsciiTable = require('ascii-data-table')
+var AsciiTable = require('ascii-data-table').default
 
 // or if installed by cloning git repo, use the correct path
-var AsciiTable = require('../lib/ascii-data-table')
+//var AsciiTable = require('../lib/ascii-data-table').default
 
 var items = [['x', 'y'], ['a', 'b'], ['c', 'd']]
 var res = AsciiTable.run(items)
