@@ -71,3 +71,7 @@ In the `./examples` folder there are examples for node and web browser environme
 One cool thing in the browser demo is that you can hook up a range slider to the maximun 
 width of the columns, giving this effect:  
 ![slider-gif-demo](https://oskarhane-dropshare-eu.s3-eu-central-1.amazonaws.com/ascii-data-table-slider-lfbBzm2sql/ascii-data-table-slider.gif)
+
+## Testing
+Run `npm test` to execute test in both Node.js and browser environments.  
+Run `npm run test:watch` to have tests run on file changes.
