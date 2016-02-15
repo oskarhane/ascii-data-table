@@ -10,6 +10,12 @@ describe('Ascii Tables', () => {
     expect(res).toBe('')
   })
 
+  it('should not generate a table if input data isn\'t an array', () => {
+    const items = 'Hello'
+    const res = AsciiTable.run(items)
+    expect(res).toBe('')
+  })
+
   it('should generate a simple table', () => {
     const items = [['x'], ['a']]
     const res = AsciiTable.run(items)

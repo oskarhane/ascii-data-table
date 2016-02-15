@@ -55,7 +55,7 @@ const getColWidths = (rows) => {
 }
 
 const renderForWidth = (rows, maxColWidth = 30, minColWidth = 3) => {
-  if (!rows.length) return ''
+  if (!Array.isArray(rows) || !rows.length) return ''
   const colWidths = getColWidths(rows).map((colWidth) => {
     return Math.max(Math.min(colWidth, maxColWidth), minColWidth)
   })
