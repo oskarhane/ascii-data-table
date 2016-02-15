@@ -67,7 +67,7 @@ A bundle for web browsers is created and can be found in `./lib`.
 </script>
 ```
 ## Examples / Demo
-You can try online here: [online demo](https://oskarhane-dropshare-eu.s3-eu-central-1.amazonaws.com/index-kdbMO8xbos)  
+You can try online here: [Online demo](https://oskarhane-dropshare-eu.s3-eu-central-1.amazonaws.com/index-kdbMO8xbos/index.html)  
 In the `./examples` folder there are examples for node and web browser environments.  
 One cool thing in the browser demo is that you can hook up a range slider to the maximun 
 width of the columns, giving this effect:  
