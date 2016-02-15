@@ -49,7 +49,7 @@ Usage in Node.js varies depending if the will be used within a ES2015 applicatio
 
 ```
 // If install with npm
-import AsciiTable from ascii-data-table'
+import AsciiTable from 'ascii-data-table'
 
 // or if installed by cloning git repo, use the correct path
 //import AsciiTable from '../lib/ascii-data-table'
