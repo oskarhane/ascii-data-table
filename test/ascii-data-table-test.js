@@ -1,7 +1,7 @@
 /* global describe, it */
 
 import expect from 'expect'
-import AsciiTable from '../src/ascii-tables'
+import AsciiTable from '../src/ascii-data-table'
 
 describe('Ascii Tables', () => {
   it('should generate a simple table', () => {

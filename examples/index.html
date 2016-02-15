@@ -2,16 +2,19 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>title</title>
+    <title>Ascii Data Tables width adjuster example</title>
     <script type="text/javascript" src="../lib/bundle.js"></script>
     <script type="text/javascript">
       var data = [
         ['title', 'description'], 
         ['A Few Good Men', 'In the heart of the nation\'s capital, in a courthouse of the U.S. government, one man will stop at nothing to keep his honor, and one will stop at nothing to find the truth.'], 
-        ['Charlie Wilson\'s War', 'A stiff drink. A little mascara. A lot of nerve. Who said they couldn\'t bring down the Soviet empire.']
+        ['Charlie Wilson\'s War', 'A stiff drink. A little mascara. A lot of nerve. Who said they couldn\'t bring down the Soviet empire.'],
+        ['Sleepless in Seattle', 'What if someone you never met, someone you never saw, someone you never knew was the only someone for you?']
       ]
       function renderTable(id, data, maxWidth) {
-        document.getElementById(id).innerHTML = AsciiTable.run(data, {maxColumnWidth: maxWidth})
+        var output = AsciiTable.run(data, {maxColumnWidth: maxWidth})
+        document.getElementById(id).innerHTML = output
+        //console.log(output) <- Cool, but spams the console
       }
       function widthUpdated (w){
         renderTable('table', data, w)
@@ -32,10 +35,10 @@
      #table {
       text-align: left;
       display: block;
-      background-color: #eee;
+      background-color: #ddd;
       color: #222;
-      width: 800px;
-      height: 500px;
+      width: 600px;
+      height: 300px;
       overflow: auto;
       margin: 50px auto 10px auto;
       padding: 20px;

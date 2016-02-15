@@ -1,4 +1,4 @@
-var AsciiTable = require('../lib/ascii-tables')
+var AsciiTable = require('../lib/ascii-data-table')
 console.log('\n')
 console.log(AsciiTable.default.run([['x', 'y'], ['a', 'b'], ['c', 'd']]))
 console.log('\n')
