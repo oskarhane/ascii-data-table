@@ -12,7 +12,7 @@ with one index for every column.
 All rows should have the same number of columns, and the first row is expected to 
 be the header column with titles for each column.
 
-```
+```javascript
 [
   ['first column', 'second column'], // title row
   ['my data row 1 col 1', 'my data row 1 col 2'], // first data row
@@ -47,7 +47,7 @@ Usage in Node.js varies depending if the will be used within a ES2015 applicatio
 
 **In ES2015**
 
-```
+```javascript
 // If install with npm
 import AsciiTable from 'ascii-data-table'
 
@@ -63,7 +63,7 @@ const res = AsciiTable.run(items)
 
 **In ES 5.5**
 
-```
+```javascript
 // If install with npm
 var AsciiTable = require('ascii-data-table').default
 
@@ -77,7 +77,7 @@ var res = AsciiTable.run(items)
 ### In web browsers
 A bundle for web browsers is created and can be found in `./lib`.
 
-```
+```hmtl
 <script type="text/javascript" src="../lib/bundle.js"></script>
 <script type="text/javascript">
   var items = [['x', 'y'], ['a', 'b'], ['c', 'd']]
