@@ -3,12 +3,15 @@
   "version": "1.0.5",
   "description": "Render data in a width adjustable ascii table.",
   "main": "lib/ascii-data-table",
+  "standard": {
+    "ignore": ["/lib/"]
+  },
   "scripts": {
     "build": "npm run lint && npm run build:node && npm run build:browser",
     "build:node": "./node_modules/.bin/babel src/ascii-data-table.js --out-file lib/ascii-data-table.js --source-maps",
     "build:browser": "webpack -d",
     "prepublish": "npm run build",
-    "lint": "./node_modules/.bin/standard src/**/*.js",
+    "lint": "./node_modules/.bin/standard",
     "test:node": "./node_modules/.bin/mocha --compilers js:babel-core/register --reporter dot test/**/*-test.js",
     "test:browser": "./node_modules/karma/bin/karma start karma.config.js --single-run --no-auto-watch",
     "test": "npm run lint && npm run test:node && npm run test:browser",
