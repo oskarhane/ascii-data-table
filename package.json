@@ -1,6 +1,6 @@
 {
   "name": "ascii-data-table",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Render data in a width adjustable ascii table.",
   "main": "lib/ascii-data-table",
   "scripts": {
@@ -14,7 +14,7 @@
     "test:watch": "onchange 'src/**/*.js' 'test/**/*-test.js' -- npm run test"
   },
   "author": {
-    "name":"Oskar Hane",
+    "name": "Oskar Hane",
     "email": "npm@oskarhane.com"
   },
   "homepage": "http://oskarhane.com",
