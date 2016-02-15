@@ -1,10 +1,12 @@
 {
   "name": "ascii-data-table",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Render data in a width adjustable ascii table.",
   "main": "lib/ascii-data-table",
   "standard": {
-    "ignore": ["/lib/"]
+    "ignore": [
+      "/lib/"
+    ]
   },
   "scripts": {
     "build": "npm run lint && npm run build:node && npm run build:browser",
