@@ -41,15 +41,28 @@ Usage in Node.js varies depending if the will be used within a ES2015 applicatio
 **In ES2015**
 
 ```
-import AsciiTable from '../src/ascii-data-table' // <- Notice we want the file from 'src' here
+// If install with npm
+import AsciiTable from ascii-data-table'
+
+// or if installed by cloning git repo, use the correct path
+import AsciiTable from '../src/ascii-data-table'
+
+// The data to render
 const items = [['x', 'y'], ['a', 'b'], ['c', 'd']]
+
+// Render and save in 'res'
 const res = AsciiTable.run(items)
 ```
 
 **In ES 5.5**
 
 ```
-var AsciiTable = require('../lib/ascii-data-table') // <- Notice we want the file from 'lib' here
+// If install with npm
+var AsciiTable = require('ascii-data-table')
+
+// or if installed by cloning git repo, use the correct path
+var AsciiTable = require('../lib/ascii-data-table')
+
 var items = [['x', 'y'], ['a', 'b'], ['c', 'd']]
 var res = AsciiTable.run(items)
 ```
