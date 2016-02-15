@@ -96,3 +96,6 @@ width of the columns, giving this effect:
 ## Testing
 Run `npm test` to execute test in both Node.js and browser environments.  
 Run `npm run test:watch` to have tests run on file changes.
+
+## Contributing
+All bug reports, feature requests and pull requests are welcome. This project uses the [Javascript Standard Style](http://standardjs.com) and a lint check will run before all tests and builds.
