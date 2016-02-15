@@ -16,15 +16,13 @@ const stringifyObject = (obj) => {
 }
 
 const stringifyLines = (rows) => {
-  if (!rows) return []
+  if (!Array.isArray(rows) || !rows.length) return []
   return rows.map((row) => row.map(stringifyVal))
 }
 
 const getRowIndexForLine = (rowHeights, lineNumber) => {
   return rowHeights.reduce((meta, height, rowIndex) => {
-    if (!(meta.remainingLines >= 0)) {
-      return meta
-    }
+    if (meta.remainingLines < 0) return meta
     meta.rowIndex = rowIndex
     if (meta.remainingLines < height) {
       meta.lineIndex = meta.remainingLines
@@ -56,16 +54,8 @@ const getColWidths = (rows) => {
   })
 }
 
-const renderForWidth = (rows, maxColWidth, minColWidth) => {
-  if (maxColWidth == null) {
-    maxColWidth = 30
-  }
-  if (minColWidth == null) {
-    minColWidth = 3
-  }
-  if (!rows.length) {
-    return ''
-  }
+const renderForWidth = (rows, maxColWidth = 30, minColWidth = 3) => {
+  if (!rows.length) return ''
   const colWidths = getColWidths(rows).map((colWidth) => {
     return Math.max(Math.min(colWidth, maxColWidth), minColWidth)
   })
@@ -74,9 +64,7 @@ const renderForWidth = (rows, maxColWidth, minColWidth) => {
       return Math.max(1, Math.max(prev, Math.ceil(curr.length / colWidths[colIndex])))
     }, 0)
   })
-  const totalLines = rowHeights.reduce((tot, curr) => {
-    return tot + curr
-  }, 0)
+  const totalLines = rowHeights.reduce((tot, curr) => tot + curr, 0)
   let output = getArray(totalLines).reduce((out, _, i) => {
     const lineMeta = getRowIndexForLine(rowHeights, i)
     const rowLines = rows[lineMeta.rowIndex].reduce(getLineFromRow, {
@@ -113,9 +101,7 @@ const getSeparatorLine = (horChar, vertChar, colWidths) => {
 }
 
 const padString = (character, width) => {
-  if (!(width > 0)) {
-    return ''
-  }
+  if (width < 1) return ''
   return getArray(width).map(() => character).join('')
 }
 

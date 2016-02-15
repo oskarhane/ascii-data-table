@@ -4,6 +4,12 @@ import expect from 'expect'
 import AsciiTable from '../src/ascii-data-table'
 
 describe('Ascii Tables', () => {
+  it('should not generate a table if no data', () => {
+    const items = []
+    const res = AsciiTable.run(items)
+    expect(res).toBe('')
+  })
+
   it('should generate a simple table', () => {
     const items = [['x'], ['a']]
     const res = AsciiTable.run(items)
