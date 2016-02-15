@@ -7,7 +7,7 @@ The configuration is very limited by design, all that's configurable in the
 current version is the maximun width of the columns.
 
 The API exposes only one method: `run(rows, [options])` where `rows` is expected to be 
-an array with an index for every row, and eaxh row is also expected to be an array 
+an array with an index for every row, and each row is also expected to be an array 
 with one index for every column.  
 All rows should have the same number of columns, and the first row is expected to 
 be the header column with titles for each column.
