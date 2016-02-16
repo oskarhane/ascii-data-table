@@ -3,6 +3,6 @@ test
 examples/ascii-data-table-slider.gif
 .gitignore
 .npmignore
-karma.config.json
+karma.config.js
 tests.webpack.js
 webpack.config.js
