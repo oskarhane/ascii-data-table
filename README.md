@@ -6,9 +6,10 @@ so it can be pasted into the medium of choice.
 The configuration is very limited by design, all that's configurable in the 
 current version is the maximun width of the columns.
 
-The API exposes only one method: `run(rows, [options])` where `rows` is expected to be 
+The API exposes only two methods: `run(rows, [options])` where `rows` is expected to be 
 an array with an index for every row, and each row is also expected to be an array 
-with one index for every column.  
+with one index for every column, and `getMaxColumnWidth(rows)` to get the width of the 
+widest column.  
 All rows should have the same number of columns, and the first row is expected to 
 be the header column with titles for each column.
 
@@ -93,7 +94,7 @@ A bundle for web browsers is created and can be found in `./lib`.
 </script>
 ```
 ## Examples / Demo
-You can try online here: [Online demo](https://oskarhane-dropshare-eu.s3-eu-central-1.amazonaws.com/index-MAYXysKZJV/index.html)  
+You can try online here: [Online demo](https://oskarhane-dropshare-eu.s3-eu-central-1.amazonaws.com/index-D80YtGhE0E/index.html)  
 In the `./examples` folder there are examples for node and web browser environments.  
 One cool thing in the browser demo is that you can hook up a range slider to the maximun 
 width of the columns, giving this effect:  

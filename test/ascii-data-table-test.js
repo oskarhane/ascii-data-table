@@ -3,6 +3,11 @@
 import expect from 'expect'
 import AsciiTable from '../src/ascii-data-table'
 
+function checkColWidth (AsciiTable, items, expectedLength) {
+  const res = AsciiTable.getMaxColumnWidth(items)
+  expect(res).toBe(expectedLength)
+}
+
 describe('Ascii Tables', () => {
   it('should not generate a table if no data', () => {
     const items = []
@@ -149,6 +154,18 @@ describe('Ascii Tables', () => {
       '|    |stri|',
       '|    |ng  |',
       '+----+----+'].join('\n')
+    )
+  })
+
+  it('should find the max column width', () => {
+    checkColWidth(AsciiTable, [['x', 'y'], [{a: 'a', b: 'b'}, 'ab'], ['c', {d: 'd'}]],
+      12
+    )
+    checkColWidth(AsciiTable, [['xxxxxxxx', 'y'], ['a', 'ab'], ['c', {d: 'd'}]],
+      8
+    )
+    checkColWidth(AsciiTable, [['xxxxxxxx', 'y'], ['a', 'ab'], ['c', "In the heart of the nation's capital, in a courthouse of the U.S. government, one man will stop at nothing to keep his honor, and one will stop at nothing to find the truth."]],
+      173
     )
   })
 })
