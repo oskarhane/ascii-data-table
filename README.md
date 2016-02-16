@@ -36,7 +36,13 @@ With default max width, the above would produce:
 Install with `npm` in your working directory:
 
 ```
-npm install ascii-data-table
+npm install ascii-data-table --save
+```
+
+Install with `bower` in your working directory:
+
+```
+bower install ascii-data-table --save
 ```
 
 ## Usage
