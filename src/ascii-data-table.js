@@ -117,6 +117,7 @@ const padString = (character, width) => {
 }
 
 export default {
-  run: (rows, options = {maxColumnWidth: 30}) => renderForWidth(stringifyLines(rows), options.maxColumnWidth)
+  run: (rows, options = {maxColumnWidth: 30}) => renderForWidth(stringifyLines(rows), options.maxColumnWidth),
+  getMaxColumnWidth: (rows) => getColWidths(stringifyLines(rows)).reduce((max, colWidth) => Math.max(max, colWidth), 0)
 }
 
