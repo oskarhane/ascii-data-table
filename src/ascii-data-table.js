@@ -46,10 +46,16 @@ const getLineFromRow = (prev, col, colIndex) => {
   return prev
 }
 
+const getLinesFromString = (str) => str.indexOf('\n') > -1 ? str.split('\n') : [str]
+
 const getColWidths = (rows) => {
   return getArray(rows[0].length).map((i) => {
     return rows.reduce((prev, curr) => {
-      return Math.max(prev, curr[i].length)
+      const lines = getLinesFromString(curr[i])
+      const currMax = lines.reduce((max, line) => {
+        return Math.max(max, line.length)
+      }, 0)
+      return Math.max(prev, currMax)
     }, 0)
   })
 }
@@ -61,7 +67,10 @@ const renderForWidth = (rows, maxColWidth = 30, minColWidth = 3) => {
   })
   const rowHeights = rows.map((row) => {
     return row.reduce((prev, curr, colIndex) => {
-      return Math.max(1, Math.max(prev, Math.ceil(curr.length / colWidths[colIndex])))
+      const lines = getLinesFromString(curr)
+      return lines.reduce((tot, line) => {
+        return tot + Math.max(1, Math.max(prev, Math.ceil(line.length / colWidths[colIndex])))
+      }, 0)
     }, 0)
   })
   const totalLines = rowHeights.reduce((tot, curr) => tot + curr, 0)

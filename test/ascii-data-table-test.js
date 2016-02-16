@@ -42,6 +42,36 @@ describe('Ascii Tables', () => {
     )
   })
 
+  it('should respect linebreaks', () => {
+    const items = [['x', 'y'], ['Hello,\nMy name is Oskar.\nWhat\'s your name?', 'b'], ['c', 'd']]
+    const res = AsciiTable.run(items)
+    expect(res).toBe([
+      '+=================+===+',
+      '|x                |y  |',
+      '+=================+===+',
+      '|Hello,           |b  |',
+      '|My name is Oskar.|   |',
+      "|What's your name?|   |",
+      '+-----------------+---+',
+      '|c                |d  |',
+      '+-----------------+---+'].join('\n')
+    )
+  })
+
+  it('should respect padded strings', () => {
+    const items = [['x', 'y'], ['    a', 'b'], ['c', 'd    ']]
+    const res = AsciiTable.run(items)
+    expect(res).toBe([
+      '+=====+=====+',
+      '|x    |y    |',
+      '+=====+=====+',
+      '|    a|b    |',
+      '+-----+-----+',
+      '|c    |d    |',
+      '+-----+-----+'].join('\n')
+    )
+  })
+
   it('should generate a table with arrays', () => {
     const items = [['x', 'y'], [['a', 'b'], 'ab'], [['c'], 'd']]
     const res = AsciiTable.run(items)
