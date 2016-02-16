@@ -1,3 +1,8 @@
 src
 test
 examples/ascii-data-table-slider.gif
+.gitignore
+.npmignore
+karma.config.json
+tests.webpack.js
+webpack.config.js

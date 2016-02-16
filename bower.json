@@ -26,7 +26,12 @@
     "node_modules",
     "bower_components",
     "test",
-    "examples/ascii-data-table-slider.gif"
+    "examples/ascii-data-table-slider.gif",
+    ".gitignore",
+    ".npmignore",
+    "karma.config.json",
+    "tests.webpack.js",
+    "webpack.config.js"
   ],
   "repository": {
     "type": "git",
