@@ -37,7 +37,9 @@ const getRowIndexForLine = (rowHeights, lineNumber) => {
 }
 
 const getLineFromRow = (prev, col, colIndex) => {
-  let colLines = col.match(new RegExp('.{1,' + prev.colWidths[colIndex] + '}', 'g')) || ['']
+  let colLines = getLinesFromString(col).reduce((final, curr) => {
+    return final.concat(curr.match(new RegExp('.{1,' + prev.colWidths[colIndex] + '}', 'g')) || [''])
+  }, [])
   colLines = colLines.concat(getArray(prev.rowHeight - colLines.length).map((a) => ' '))
   const linesStr = colLines
     .filter((_, lineIndex) => lineIndex === prev.lineIndex)

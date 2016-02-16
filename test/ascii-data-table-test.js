@@ -43,7 +43,7 @@ describe('Ascii Tables', () => {
   })
 
   it('should respect linebreaks', () => {
-    const items = [['x', 'y'], ['Hello,\nMy name is Oskar.\nWhat\'s your name?', 'b'], ['c', 'd']]
+    const items = [['x', 'y'], ['Hello,\nMy name is Oskar.\n\nWhat\'s your name?', 'b'], ['c', 'd']]
     const res = AsciiTable.run(items)
     expect(res).toBe([
       '+=================+===+',
@@ -51,10 +51,34 @@ describe('Ascii Tables', () => {
       '+=================+===+',
       '|Hello,           |b  |',
       '|My name is Oskar.|   |',
+      '|                 |   |',
       "|What's your name?|   |",
       '+-----------------+---+',
       '|c                |d  |',
       '+-----------------+---+'].join('\n')
+    )
+  })
+
+  it('should handle linebreak mania', () => {
+    const items = [['x', 'y'], ['\na\n\n\naaa', 'b'], ['c', 'd\n\n\n\ndd\nd']]
+    const res = AsciiTable.run(items)
+    expect(res).toBe([
+      '+===+===+',
+      '|x  |y  |',
+      '+===+===+',
+      '|   |b  |',
+      '|a  |   |',
+      '|   |   |',
+      '|   |   |',
+      '|aaa|   |',
+      '+---+---+',
+      '|c  |d  |',
+      '|   |   |',
+      '|   |   |',
+      '|   |   |',
+      '|   |dd |',
+      '|   |d  |',
+      '+---+---+'].join('\n')
     )
   })
 
