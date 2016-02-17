@@ -101,6 +101,22 @@ describe('Ascii Tables', () => {
     )
   })
 
+  it('should generate a table with numbers', () => {
+    const items = [['x'], [2], [3], [[4, 5]]]
+    const res = AsciiTable.run(items)
+    expect(res).toBe([
+      '+======+',
+      '|x     |',
+      '+======+',
+      '|2     |',
+      '+------+',
+      '|3     |',
+      '+------+',
+      '|[4, 5]|',
+      '+------+'].join('\n')
+    )
+  })
+
   it('should generate a table with arrays', () => {
     const items = [['x', 'y'], [['a', 'b'], 'ab'], [['c'], 'd']]
     const res = AsciiTable.run(items)
