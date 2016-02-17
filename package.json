@@ -1,6 +1,6 @@
 {
   "name": "ascii-data-table",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Render data in a width adjustable ascii table.",
   "main": "lib/ascii-data-table",
   "standard": {
