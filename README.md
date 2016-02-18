@@ -87,7 +87,7 @@ var res = AsciiTable.run(items)
 ### In web browsers
 A bundle for web browsers is created and can be found in `lib`.
 
-```hmtl
+```html
 <script type="text/javascript" src="/components/lib/bundle.js"></script>
 <script type="text/javascript">
   var items = [['x', 'y'], ['a', 'b'], ['c', 'd']]
@@ -101,11 +101,11 @@ A bundle for web browsers is created and can be found in `lib`.
 A bundle for Angular 1.X is created and can be found in `lib/bundle-angular.js` and 
 assumes there's a global variable named `angular` available.
 
-```
+```html
 <html>
   <head>
     <script type="text/javascript" src="/components/angular/angular.js"></script>
-    <script type="text/javascript" src="/components/lib/bundle-angular.js"></script>
+    <script type="text/javascript" src="/components/ascii-data-table/lib/bundle-angular.js"></script>
     <script type="text/javascript">
       var app = angular
         .module('myApp', ['AsciiTableModule'])

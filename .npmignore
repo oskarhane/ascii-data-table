@@ -6,3 +6,4 @@ examples/ascii-data-table-slider.gif
 karma.config.js
 tests.webpack.js
 webpack.config.js
+webpack.angular.config.js
