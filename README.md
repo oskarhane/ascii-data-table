@@ -64,8 +64,11 @@ import AsciiTable from 'ascii-data-table'
 // The data to render
 const items = [['x', 'y'], ['a', 'b'], ['c', 'd']]
 
+// Not required, default is 30
+const options = {maxColumnWidth: 15}
+
 // Render and save in 'res'
-const res = AsciiTable.run(items)
+const res = AsciiTable.run(items, options)
 ```
 
 **In ES 5.5**
