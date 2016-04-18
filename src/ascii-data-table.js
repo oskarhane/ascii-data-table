@@ -4,6 +4,7 @@ const stringifyVal = (val) => {
   if (Array.isArray(val)) return stringifyArray(val)
   if (typeof val === 'number') return val
   if (typeof val === 'string') return val
+  if (typeof val === 'boolean') return val
   if (val === null) return '(null)'
   if (typeof val === 'object') return stringifyObject(val)
 }

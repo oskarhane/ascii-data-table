@@ -22,14 +22,16 @@ describe('Ascii Tables', () => {
   })
 
   it('should generate a simple table', () => {
-    const items = [['x'], ['a']]
+    const items = [['x'], ['a'], [true]]
     const res = AsciiTable.run(items)
     expect(res).toBe([
-      '+===+',
-      '|x  |',
-      '+===+',
-      '|a  |',
-      '+---+'].join('\n')
+      '+====+',
+      '|x   |',
+      '+====+',
+      '|a   |',
+      '+----+',
+      '|true|',
+      '+----+'].join('\n')
     )
   })
 
