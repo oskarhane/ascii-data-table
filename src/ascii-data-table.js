@@ -87,8 +87,8 @@ const renderForWidth = (rows, maxColWidth = 30, minColWidth = 3) => {
       lineIndex: lineMeta.lineIndex,
       rowHeight: rowHeights[lineMeta.rowIndex],
       colWidths: colWidths
-    }).lines.join('|')
-    out.push('|' + rowLines + '|')
+    }).lines.join('│')
+    out.push('│' + rowLines + '│')
     return out
   }, [])
   output = insertRowSeparators(output, rowHeights, colWidths)
@@ -98,21 +98,28 @@ const renderForWidth = (rows, maxColWidth = 30, minColWidth = 3) => {
 const insertRowSeparators = (lines, rowHeights, colWidths) => {
   return rowHeights.reduce((out, rowHeight, rowIndex) => {
     out.curr.push.apply(out.curr, out.feeder.splice(0, rowHeight))
-    if (rowIndex !== 0) out.curr.push(getThinSeparatorLine(colWidths))
-    if (rowIndex === 0) out.curr.push(getThickSeparatorLine(colWidths))
+    if (rowIndex === 0) {
+      out.curr.push(getThickSeparatorLine(colWidths))
+    } else if (rowIndex === rowHeights.length - 1) {
+      out.curr.push(getBottomSeparatorLine(colWidths))
+    } else {
+      out.curr.push(getThinSeparatorLine(colWidths))
+    }
     return out
   }, {
     feeder: lines,
-    curr: [getThickSeparatorLine(colWidths)]
+    curr: [getTopSeparatorLine(colWidths)]
   }).curr
 }
 
-const getThickSeparatorLine = (colWidths) => getSeparatorLine('=', '+', colWidths)
-const getThinSeparatorLine = (colWidths) => getSeparatorLine('-', '+', colWidths)
-const getSeparatorLine = (horChar, vertChar, colWidths) => {
-  return vertChar + colWidths.map((w) => {
+const getTopSeparatorLine = (colWidths) => getSeparatorLine('═', '╒', '╤', '╕', colWidths)
+const getThickSeparatorLine = (colWidths) => getSeparatorLine('═', '╞', '╪', '╡', colWidths)
+const getThinSeparatorLine = (colWidths) => getSeparatorLine('─', '├', '┼', '┤', colWidths)
+const getBottomSeparatorLine = (colWidths) => getSeparatorLine('─', '└', '┴', '┘', colWidths)
+const getSeparatorLine = (horChar, leftChar, crossChar, rightChar, colWidths) => {
+  return leftChar + colWidths.map(function (w) {
     return padString(horChar, w)
-  }).join(vertChar) + vertChar
+  }).join(crossChar) + rightChar
 }
 
 const padString = (character, width) => {
