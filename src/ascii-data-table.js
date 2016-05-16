@@ -37,16 +37,19 @@ const getRowIndexForLine = (rowHeights, lineNumber) => {
   })
 }
 
-const getLineFromRow = (prev, col, colIndex) => {
-  let colLines = getLinesFromString(col).reduce((final, curr) => {
-    return final.concat(('' + curr).match(new RegExp('.{1,' + prev.colWidths[colIndex] + '}', 'g')) || [''])
-  }, [])
-  colLines = colLines.concat(getArray(prev.rowHeight - colLines.length).map((a) => ' '))
-  const linesStr = colLines
+const getLineFromCol = (prev, _, colIndex) => {
+  const linesStr = prev.colsLines[prev.rowIndex][colIndex]
     .filter((_, lineIndex) => lineIndex === prev.lineIndex)
     .map((line) => line + padString(' ', prev.colWidths[colIndex] - line.length))
   prev.lines.push(linesStr)
   return prev
+}
+
+const getColLines = (col, colWidth, rowHeight) => {
+  let colLines = getLinesFromString(col).reduce((final, curr) => {
+    return final.concat(('' + curr).match(new RegExp('.{1,' + colWidth + '}', 'g')) || [''])
+  }, [])
+  return colLines.concat(getArray(rowHeight - colLines.length).map((a) => ' '))
 }
 
 const getLinesFromString = (str) => {
@@ -80,13 +83,18 @@ const renderForWidth = (rows, maxColWidth = 30, minColWidth = 3) => {
     }, 0)
   })
   const totalLines = rowHeights.reduce((tot, curr) => tot + curr, 0)
+  const colsLines = rows.reduce((colLines, row, rowIndex) => {
+    const cols = row.map((col, colIndex) => getColLines(col, colWidths[colIndex], rowHeights[rowIndex]))
+    return colLines.concat([cols])
+  }, [])
   let output = getArray(totalLines).reduce((out, _, i) => {
     const lineMeta = getRowIndexForLine(rowHeights, i)
-    const rowLines = rows[lineMeta.rowIndex].reduce(getLineFromRow, {
+    const rowLines = rows[lineMeta.rowIndex].reduce(getLineFromCol, {
       lines: [],
       lineIndex: lineMeta.lineIndex,
-      rowHeight: rowHeights[lineMeta.rowIndex],
-      colWidths: colWidths
+      colWidths: colWidths,
+      colsLines: colsLines,
+      rowIndex: lineMeta.rowIndex
     }).lines.join('│')
     out.push('│' + rowLines + '│')
     return out
