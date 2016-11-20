@@ -1,34 +1,35 @@
 /* global describe, it */
 
 import expect from 'expect'
+import repeat from 'core-js/library/fn/string/repeat'
 import AsciiTable from '../src/ascii-data-table'
 
 function checkColWidth (AsciiTable, items, expectedLength) {
-  const res = AsciiTable.getMaxColumnWidth(items)
-  expect(res).toBe(expectedLength)
+  const res = AsciiTable.maxColumnWidth(items)
+  expect(res).toEqual(expectedLength)
 }
 
 describe('Ascii Tables', () => {
   it('should not generate a table if no data', () => {
     const items = []
-    const res = AsciiTable.run(items)
-    expect(res).toBe('')
+    const res = AsciiTable.table(items)
+    expect(res).toEqual('')
   })
 
   it('should not generate a table if input data isn\'t an array', () => {
     const items = 'Hello'
-    const res = AsciiTable.run(items)
-    expect(res).toBe('')
+    const res = AsciiTable.table(items)
+    expect(res).toEqual('')
   })
 
   it('should generate a simple table', () => {
     const items = [['x'], ['a'], [true]]
-    const res = AsciiTable.run(items)
-    expect(res).toBe([
+    const res = AsciiTable.table(items)
+    expect(res).toEqual([
       '╒════╕',
-      '│x   │',
+      '│"x" │',
       '╞════╡',
-      '│a   │',
+      '│"a" │',
       '├────┤',
       '│true│',
       '└────┘'].join('\n')
@@ -37,113 +38,139 @@ describe('Ascii Tables', () => {
 
   it('should generate a table with multiple columns and rows', () => {
     const items = [['x', 'y'], ['a', 'b'], ['c', 'd']]
-    const res = AsciiTable.run(items)
-    expect(res).toBe([
+    const res = AsciiTable.table(items)
+    expect(res).toEqual([
       '╒═══╤═══╕',
-      '│x  │y  │',
+      '│"x"│"y"│',
       '╞═══╪═══╡',
-      '│a  │b  │',
+      '│"a"│"b"│',
       '├───┼───┤',
-      '│c  │d  │',
+      '│"c"│"d"│',
       '└───┴───┘'].join('\n')
     )
   })
 
-  it('should respect linebreaks', () => {
+  it('should escape linebreaks', () => {
     const items = [['x', 'y'], ['Hello,\nMy name is Oskar.\n\nWhat\'s your name?', 'b'], ['c', 'd']]
-    const res = AsciiTable.run(items)
-    expect(res).toBe([
-      '╒═════════════════╤═══╕',
-      '│x                │y  │',
-      '╞═════════════════╪═══╡',
-      '│Hello,           │b  │',
-      '│My name is Oskar.│   │',
-      '│                 │   │',
-      "│What's your name?│   │",
-      '├─────────────────┼───┤',
-      '│c                │d  │',
-      '└─────────────────┴───┘'].join('\n')
+    const res = AsciiTable.table(items, 100)
+    expect(res).toEqual([
+      '╒════════════════════════════════════════════════╤═══╕',
+      '│"x"                                             │"y"│',
+      '╞════════════════════════════════════════════════╪═══╡',
+      '│"Hello,\\nMy name is Oskar.\\n\\nWhat\'s your name?"│"b"│', // Look weird b/c of escape
+      '├────────────────────────────────────────────────┼───┤',
+      '│"c"                                             │"d"│',
+      '└────────────────────────────────────────────────┴───┘'].join('\n')
     )
   })
 
-  it('should handle linebreak mania', () => {
-    const items = [['x', 'y'], ['\na\n\n\naaa', 'b'], ['c', 'd\n\n\n\ndd\nd']]
-    const res = AsciiTable.run(items)
-    expect(res).toBe([
-      '╒═══╤═══╕',
-      '│x  │y  │',
-      '╞═══╪═══╡',
-      '│   │b  │',
-      '│a  │   │',
-      '│   │   │',
-      '│   │   │',
-      '│aaa│   │',
-      '├───┼───┤',
-      '│c  │d  │',
-      '│   │   │',
-      '│   │   │',
-      '│   │   │',
-      '│   │dd │',
-      '│   │d  │',
-      '└───┴───┘'].join('\n')
+  it('should not make columns shorter than 3', () => {
+    const items = [[1], [1]]
+    const res = AsciiTable.table(items)
+    expect(res).toEqual([
+      '╒═══╕',
+      '│1  │',
+      '╞═══╡',
+      '│1  │',
+      '└───┘'].join('\n')
     )
   })
 
   it('should respect padded strings', () => {
     const items = [['x', 'y'], ['    a', 'b'], ['c', 'd    ']]
-    const res = AsciiTable.run(items)
-    expect(res).toBe([
-      '╒═════╤═════╕',
-      '│x    │y    │',
-      '╞═════╪═════╡',
-      '│    a│b    │',
-      '├─────┼─────┤',
-      '│c    │d    │',
-      '└─────┴─────┘'].join('\n')
+    const res = AsciiTable.table(items)
+    expect(res).toEqual([
+      '╒═══════╤═══════╕',
+      '│"x"    │"y"    │',
+      '╞═══════╪═══════╡',
+      '│"    a"│"b"    │',
+      '├───────┼───────┤',
+      '│"c"    │"d    "│',
+      '└───────┴───────┘'].join('\n')
     )
   })
 
   it('should generate a table with numbers', () => {
     const items = [['x'], [2], [3], [[4, 5]]]
-    const res = AsciiTable.run(items)
-    expect(res).toBe([
-      '╒══════╕',
-      '│x     │',
-      '╞══════╡',
-      '│2     │',
-      '├──────┤',
-      '│3     │',
-      '├──────┤',
-      '│[4, 5]│',
-      '└──────┘'].join('\n')
+    const res = AsciiTable.table(items)
+    expect(res).toEqual([
+      '╒═════╕',
+      '│"x"  │',
+      '╞═════╡',
+      '│2    │',
+      '├─────┤',
+      '│3    │',
+      '├─────┤',
+      '│[4,5]│',
+      '└─────┘'].join('\n')
     )
   })
 
   it('should generate a table with arrays', () => {
     const items = [['x', 'y'], [['a', 'b'], 'ab'], [['c'], 'd']]
-    const res = AsciiTable.run(items)
-    expect(res).toBe([
-      '╒══════╤═══╕',
-      '│x     │y  │',
-      '╞══════╪═══╡',
-      '│[a, b]│ab │',
-      '├──────┼───┤',
-      '│[c]   │d  │',
-      '└──────┴───┘'].join('\n')
+    const res = AsciiTable.table(items)
+    expect(res).toEqual([
+      '╒═════════╤════╕',
+      '│"x"      │"y" │',
+      '╞═════════╪════╡',
+      '│["a","b"]│"ab"│',
+      '├─────────┼────┤',
+      '│["c"]    │"d" │',
+      '└─────────┴────┘'].join('\n')
+    )
+  })
+
+  it('should generate a table with arrays, with different widths', () => {
+    const items = [['x', 'y'], [['a', 'b'], 'ab'], [['c'], 'd']]
+    const res = AsciiTable.table(items)
+    const res2 = AsciiTable.table(items, 7)
+    expect(res).toEqual([
+      '╒═════════╤════╕',
+      '│"x"      │"y" │',
+      '╞═════════╪════╡',
+      '│["a","b"]│"ab"│',
+      '├─────────┼────┤',
+      '│["c"]    │"d" │',
+      '└─────────┴────┘'].join('\n')
+    )
+    expect(res2).toEqual([
+      '╒═══════╤════╕',
+      '│"x"    │"y" │',
+      '╞═══════╪════╡',
+      '│["a","b│"ab"│',
+      '│"]     │    │',
+      '├───────┼────┤',
+      '│["c"]  │"d" │',
+      '└───────┴────┘'].join('\n')
+    )
+  })
+
+  it('should cast maxWidth to int', () => {
+    const items = [['x', 'y'], [['a', 'b'], 'ab'], [['c'], 'd']]
+    const res = AsciiTable.table(items, '7')
+    expect(res).toEqual([
+      '╒═══════╤════╕',
+      '│"x"    │"y" │',
+      '╞═══════╪════╡',
+      '│["a","b│"ab"│',
+      '│"]     │    │',
+      '├───────┼────┤',
+      '│["c"]  │"d" │',
+      '└───────┴────┘'].join('\n')
     )
   })
 
   it('should generate a table with objects', () => {
     const items = [['x', 'y'], [{a: 'a', b: 'b'}, 'ab'], ['c', {d: 'd'}]]
-    const res = AsciiTable.run(items)
-    expect(res).toBe([
-      '╒════════════╤══════╕',
-      '│x           │y     │',
-      '╞════════════╪══════╡',
-      '│{a: a, b: b}│ab    │',
-      '├────────────┼──────┤',
-      '│c           │{d: d}│',
-      '└────────────┴──────┘'].join('\n')
+    const res = AsciiTable.table(items)
+    expect(res).toEqual([
+      '╒═════════════════╤═════════╕',
+      '│"x"              │"y"      │',
+      '╞═════════════════╪═════════╡',
+      '│{"a":"a","b":"b"}│"ab"     │',
+      '├─────────────────┼─────────┤',
+      '│"c"              │{"d":"d"}│',
+      '└─────────────────┴─────────┘'].join('\n')
     )
   })
 
@@ -154,36 +181,50 @@ describe('Ascii Tables', () => {
       [{c: 'cccccc'}, ['ddddd']],
       ['string', 'verylongstring']
     ]
-    const res = AsciiTable.run(items, {maxColumnWidth: 4})
-    expect(res).toBe([
+    const res = AsciiTable.table(items, 4)
+    expect(res).toEqual([
       '╒════╤════╕',
-      '│xxxx│yyyy│',
-      '│xx  │yy  │',
+      '│"xxx│"yyy│',
+      '│xxx"│yyy"│',
       '╞════╪════╡',
-      '│aaaa│bbb │',
-      '│a   │    │',
+      '│"aaa│"bbb│',
+      '│aa" │"   │',
       '├────┼────┤',
-      '│{c: │[ddd│',
-      '│cccc│dd] │',
-      '│cc} │    │',
+      '│{"c"│["dd│',
+      '│:"cc│ddd"│',
+      '│cccc│]   │',
+      '│"}  │    │',
       '├────┼────┤',
-      '│stri│very│',
-      '│ng  │long│',
-      '│    │stri│',
-      '│    │ng  │',
+      '│"str│"ver│',
+      '│ing"│ylon│',
+      '│    │gstr│',
+      '│    │ing"│',
       '└────┴────┘'].join('\n')
+    )
+  })
+
+  it('should be able to generate very wide tables', () => {
+    const len = 100000
+    const items = [['x', 'y'], [repeat('x', len), 'hey']]
+    const res = AsciiTable.table(items, 9999999999)
+    expect(res).toEqual([
+      '╒' + repeat('═', len + 2) + '╤═════╕',
+      '│"x"' + repeat(' ', len - 1) + '│"y"  │',
+      '╞' + repeat('═', len + 2) + '╪═════╡',
+      '│"' + repeat('x', len) + '"│"hey"│',
+      '└' + repeat('─', len + 2) + '┴─────┘'].join('\n')
     )
   })
 
   it('should find the max column width', () => {
     checkColWidth(AsciiTable, [['x', 'y'], [{a: 'a', b: 'b'}, 'ab'], ['c', {d: 'd'}]],
-      12
+      JSON.stringify({a: 'a', b: 'b'}).length
     )
     checkColWidth(AsciiTable, [['xxxxxxxx', 'y'], ['a', 'ab'], ['c', {d: 'd'}]],
-      8
+      JSON.stringify('xxxxxxxx').length
     )
     checkColWidth(AsciiTable, [['xxxxxxxx', 'y'], ['a', 'ab'], ['c', "In the heart of the nation's capital, in a courthouse of the U.S. government, one man will stop at nothing to keep his honor, and one will stop at nothing to find the truth."]],
-      173
+      JSON.stringify("In the heart of the nation's capital, in a courthouse of the U.S. government, one man will stop at nothing to keep his honor, and one will stop at nothing to find the truth.").length
     )
   })
 })

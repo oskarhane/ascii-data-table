@@ -1,125 +1,13 @@
-const getArray = (len) => Array.apply(null, Array(len)).map((_, i) => i)
+import R from 'ramda'
+import repeat from 'core-js/library/fn/string/repeat'
 
-const stringifyVal = (val) => {
-  if (Array.isArray(val)) return stringifyArray(val)
-  if (typeof val === 'number') return val
-  if (typeof val === 'string') return val
-  if (typeof val === 'boolean') return val
-  if (val === null) return '(null)'
-  if (typeof val === 'object') return stringifyObject(val)
-}
-
-const stringifyArray = (arr) => '[' + arr.map(stringifyVal).join(', ') + ']'
-
-const stringifyObject = (obj) => {
-  if (typeof obj !== 'object') return obj
-  return '{' + Object.keys(obj).map((key) => key + ': ' + stringifyVal(obj[key])).join(', ') + '}'
-}
-
-const stringifyLines = (rows) => {
+const len = (val) => typeof val === 'undefined' ? 0 : ('' + val).length
+const padString = (character, width) => !width ? '' : repeat(character, width)
+const stringifyRows = (rows) => {
   if (!Array.isArray(rows) || !rows.length) return []
-  return rows.map((row) => row.map(stringifyVal))
+  return rows.map((row) => row.map(JSON.stringify))
 }
-
-const getRowIndexForLine = (rowHeights, lineNumber) => {
-  return rowHeights.reduce((meta, height, rowIndex) => {
-    if (meta.remainingLines < 0) return meta
-    meta.rowIndex = rowIndex
-    if (meta.remainingLines < height) {
-      meta.lineIndex = meta.remainingLines
-    }
-    meta.remainingLines = meta.remainingLines - height
-    return meta
-  }, {
-    rowIndex: 0,
-    lineIndex: 0,
-    remainingLines: lineNumber
-  })
-}
-
-const getLineFromCol = (prev, _, colIndex) => {
-  const linesStr = prev.colsLines[prev.rowIndex][colIndex]
-    .filter((_, lineIndex) => lineIndex === prev.lineIndex)
-    .map((line) => line + padString(' ', prev.colWidths[colIndex] - line.length))
-  prev.lines.push(linesStr)
-  return prev
-}
-
-const getColLines = (col, colWidth, rowHeight) => {
-  let colLines = getLinesFromString(col).reduce((final, curr) => {
-    return final.concat(('' + curr).match(new RegExp('.{1,' + colWidth + '}', 'g')) || [''])
-  }, [])
-  return colLines.concat(getArray(rowHeight - colLines.length).map((a) => ' '))
-}
-
-const getLinesFromString = (str) => {
-  if (typeof str !== 'string') return [str]
-  return str.indexOf('\n') > -1 ? str.split('\n') : [str]
-}
-
-const getColWidths = (rows) => {
-  return getArray(rows[0].length).map((i) => {
-    return rows.reduce((prev, curr) => {
-      const lines = getLinesFromString(curr[i])
-      const currMax = lines.reduce((max, line) => {
-        return Math.max(max, ('' + line).length)
-      }, 0)
-      return Math.max(prev, currMax)
-    }, 0)
-  })
-}
-
-const renderForWidth = (rows, maxColWidth = 30, minColWidth = 3) => {
-  if (!Array.isArray(rows) || !rows.length) return ''
-  const colWidths = getColWidths(rows).map((colWidth) => {
-    return Math.max(Math.min(colWidth, maxColWidth), minColWidth)
-  })
-  const rowHeights = rows.map((row) => {
-    return row.reduce((prev, curr, colIndex) => {
-      const lines = getLinesFromString(curr)
-      return lines.reduce((tot, line) => {
-        return tot + Math.max(1, Math.max(prev, Math.ceil(('' + line).length / colWidths[colIndex])))
-      }, 0)
-    }, 0)
-  })
-  const totalLines = rowHeights.reduce((tot, curr) => tot + curr, 0)
-  const colsLines = rows.reduce((colLines, row, rowIndex) => {
-    const cols = row.map((col, colIndex) => getColLines(col, colWidths[colIndex], rowHeights[rowIndex]))
-    return colLines.concat([cols])
-  }, [])
-  let output = getArray(totalLines).reduce((out, _, i) => {
-    const lineMeta = getRowIndexForLine(rowHeights, i)
-    const rowLines = rows[lineMeta.rowIndex].reduce(getLineFromCol, {
-      lines: [],
-      lineIndex: lineMeta.lineIndex,
-      colWidths: colWidths,
-      colsLines: colsLines,
-      rowIndex: lineMeta.rowIndex
-    }).lines.join('│')
-    out.push('│' + rowLines + '│')
-    return out
-  }, [])
-  output = insertRowSeparators(output, rowHeights, colWidths)
-  return output.join('\n')
-}
-
-const insertRowSeparators = (lines, rowHeights, colWidths) => {
-  return rowHeights.reduce((out, rowHeight, rowIndex) => {
-    out.curr.push.apply(out.curr, out.feeder.splice(0, rowHeight))
-    if (rowIndex === 0) {
-      out.curr.push(getThickSeparatorLine(colWidths))
-    } else if (rowIndex === rowHeights.length - 1) {
-      out.curr.push(getBottomSeparatorLine(colWidths))
-    } else {
-      out.curr.push(getThinSeparatorLine(colWidths))
-    }
-    return out
-  }, {
-    feeder: lines,
-    curr: [getTopSeparatorLine(colWidths)]
-  }).curr
-}
-
+const insertColSeparators = (arr) => '│' + arr.join('│') + '│'
 const getTopSeparatorLine = (colWidths) => getSeparatorLine('═', '╒', '╤', '╕', colWidths)
 const getThickSeparatorLine = (colWidths) => getSeparatorLine('═', '╞', '╪', '╡', colWidths)
 const getThinSeparatorLine = (colWidths) => getSeparatorLine('─', '├', '┼', '┤', colWidths)
@@ -130,13 +18,74 @@ const getSeparatorLine = (horChar, leftChar, crossChar, rightChar, colWidths) =>
   }).join(crossChar) + rightChar
 }
 
-const padString = (character, width) => {
-  if (width < 1) return ''
-  return getArray(width).map(() => character).join('')
+const colWidths = (maxWidth, minWidth, input) => {
+  if (!Array.isArray(input)) {
+    return 0
+  }
+  return input[0].map((_, i) => {
+    const tCol = R.pluck(i, input).map((col) => len(col))
+    const measuredMax = Math.max(R.apply(Math.max, tCol), minWidth)
+    return measuredMax > maxWidth && maxWidth > 0 ? maxWidth : measuredMax
+  })
+}
+
+const rowHeights = (maxWidth, input) => {
+  return input.map((row) => {
+    const maxLen = R.apply(Math.max, row.map((col) => len(col)))
+    const numLines = Math.ceil(maxLen / maxWidth)
+    return numLines
+  })
+}
+
+const splitRowsToLines = (maxWidth, heights, widths, input) => {
+  return input.map((row, i) => {
+    return row.map((col, colIndex) => {
+      let lines = R.splitEvery(maxWidth, col)
+      const lastLinesLen = len(R.last(lines))
+      if (lastLinesLen < widths[colIndex]) {
+        lines[lines.length - 1] = lines[lines.length - 1] + padString(' ', widths[colIndex] - lastLinesLen)
+      }
+      while (lines.length < heights[i]) {
+        lines = [].concat(...lines, [padString(' ', widths[colIndex])])
+      }
+      return lines
+    })
+  })
+}
+
+const createLines = (rows) => {
+  return rows.reduce((lines, row) => {
+    if (!Array.isArray(row)) {
+      return [].concat(lines, row)
+    }
+    const tRow = R.transpose(row).map(insertColSeparators)
+    return [].concat(lines, tRow)
+  }, [])
+}
+
+const renderForWidth = (rows, maxColWidth = 30, minColWidth = 3) => {
+  if (!Array.isArray(rows) || !rows.length) {
+    return ''
+  }
+  maxColWidth = parseInt(maxColWidth)
+  const widths = colWidths(maxColWidth, minColWidth, rows)
+  const heights = rowHeights(maxColWidth, rows)
+  const norm = splitRowsToLines(maxColWidth, heights, widths, rows)
+  const header = createLines([R.head(norm)])
+  const separated = R.intersperse(getThinSeparatorLine(widths), R.tail(norm))
+  const lines = createLines(separated)
+  return [
+    getTopSeparatorLine(widths),
+    ...header,
+    getThickSeparatorLine(widths),
+    ...lines,
+    getBottomSeparatorLine(widths)
+  ].join('\n')
 }
 
 export default {
-  run: (rows, options = {maxColumnWidth: 30}) => renderForWidth(stringifyLines(rows), options.maxColumnWidth),
-  getMaxColumnWidth: (rows) => getColWidths(stringifyLines(rows)).reduce((max, colWidth) => Math.max(max, colWidth), 0)
+  serializeData: (rows) => stringifyRows(rows),
+  tableFromSerializedData: (serializedRows, maxColumnWidth = 30) => renderForWidth(serializedRows, maxColumnWidth),
+  table: (rows, maxColumnWidth = 30) => renderForWidth(stringifyRows(rows), maxColumnWidth),
+  maxColumnWidth: (rows) => R.apply(Math.max, colWidths(0, 0, stringifyRows(rows)))
 }
-
