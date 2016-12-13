@@ -1,4 +1,4 @@
-import R from 'ramda'
+import * as R from './functions'
 import repeat from 'core-js/library/fn/string/repeat'
 
 const len = (val) => typeof val === 'undefined' ? 0 : ('' + val).length
@@ -71,7 +71,7 @@ const renderForWidth = (rows, maxColWidth = 30, minColWidth = 3) => {
   const widths = colWidths(maxColWidth, minColWidth, rows)
   const heights = rowHeights(maxColWidth, rows)
   const norm = splitRowsToLines(maxColWidth, heights, widths, rows)
-  const header = createLines([R.head(norm)])
+  const header = createLines(R.head(norm))
   const separated = R.intersperse(getThinSeparatorLine(widths), R.tail(norm))
   const lines = createLines(separated)
   return [

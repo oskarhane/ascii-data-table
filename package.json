@@ -60,7 +60,6 @@
     "draw ascii"
   ],
   "dependencies": {
-    "core-js": "^2.4.1",
-    "ramda": "^0.22.1"
+    "core-js": "^2.4.1"
   }
 }
