@@ -1,5 +1,8 @@
+export const array = (len) => Array.apply(null, Array(len)).map((_, i) => i)
+export const id = (x) => x
 export const pluck = (p, arr) => arr.map((o) => o[p])
 export const apply = (fn, arr) => fn.apply(null, arr)
+export const cMap = (fn) => (arr) => arr.map(fn)
 export const splitEvery = (w, a) => {
   if (!a) return a
   const tot = a.length
@@ -34,3 +37,28 @@ export const intersperse = (c, a) => {
     return all
   }, [])
 }
+
+export const Either = (x) => x != null ? Right(x) : Left(x)
+export const EitherArray = (x) => Array.isArray(x) ? Right(x) : Left(x)
+
+export const Right = (x) => ({
+  chain: (f) => f(x),
+  map: (f) => Right(f(x)),
+  fold: (f, g) => g(x),
+  inspect: () => `Right(${x})`,
+  log: (str = '') => {
+    console.log(str, 'Right', x)
+    return Right(x)
+  }
+})
+
+export const Left = (x) => ({
+  chain: (f) => Left(x),
+  map: (f) => Left(x),
+  fold: (f, g) => f(x),
+  inspect: () => `Left(${x})`,
+  log: (str = '') => {
+    console.log(str, 'Left', x)
+    return Left(x)
+  }
+})

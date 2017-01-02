@@ -2,12 +2,13 @@ import * as R from './functions'
 import repeat from 'core-js/library/fn/string/repeat'
 
 const len = (val) => typeof val === 'undefined' ? 0 : ('' + val).length
+const arrLen = (arr) => arr.length
+const arrMax = (arr) => R.apply(Math.max, arr)
+const matrixCol = (matrix) => (colNr) => R.pluck(colNr, matrix)
 const padString = (character) => (width) => !width ? '' : repeat(character, width)
 const spacePad = padString(' ')
-const stringifyRows = (rows) => {
-  if (!Array.isArray(rows) || !rows.length) return []
-  return rows.map((row) => row.map(JSON.stringify))
-}
+const stringifyArray = R.cMap(JSON.stringify)
+const stringifyRows = (rows) => R.EitherArray(rows).fold(() => null, R.cMap(stringifyArray))
 const insertColSeparators = (arr) => '│' + arr.join('│') + '│'
 const getTopSeparatorLine = (colWidths) => getSeparatorLine('═', '╒', '╤', '╕', colWidths)
 const getThickSeparatorLine = (colWidths) => getSeparatorLine('═', '╞', '╪', '╡', colWidths)
@@ -20,19 +21,23 @@ const getSeparatorLine = (horChar, leftChar, crossChar, rightChar, colWidths) =>
 }
 
 const colWidths = (maxWidth, minWidth, input) => {
-  if (!Array.isArray(input)) {
-    return 0
-  }
-  return input[0].map((_, i) => {
-    const tCol = R.pluck(i, input).map((col) => len(col))
-    const measuredMax = Math.max(R.apply(Math.max, tCol), minWidth)
-    return measuredMax > maxWidth && maxWidth > 0 ? maxWidth : measuredMax
-  })
+  const inputEither = R.EitherArray(input)
+  const columnAtIndex = matrixCol(input)
+  const normalizeWidth = (w) => Math.min(Math.max(w, minWidth), (maxWidth || Infinity))
+  return inputEither
+          .map((r) => R.head(r)[0]) // Grab title row
+          .map(arrLen)              // Get the number of columns
+          .map(R.array)             // Create a new array with same number of columns
+          .map(R.cMap(columnAtIndex))  // Populate new array with columns from input
+          .map(R.cMap(R.cMap(len)))  // Measure the width of every column of every row
+          .map(R.cMap(arrMax))  // Grab the max width of every column
+          .map(R.cMap(normalizeWidth)) // Normalize width to be within limits
+          .fold(() => [0], R.id)  // default to 0
 }
 
 const rowHeights = (maxWidth, input) => {
   return input.map((row) => {
-    const maxLen = R.apply(Math.max, row.map((col) => len(col)))
+    const maxLen = arrMax(row.map(len))
     const numLines = Math.ceil(maxLen / maxWidth)
     return numLines
   })
@@ -88,5 +93,5 @@ export default {
   serializeData: (rows) => stringifyRows(rows),
   tableFromSerializedData: (serializedRows, maxColumnWidth = 30) => main(serializedRows, maxColumnWidth),
   table: (rows, maxColumnWidth = 30) => main(stringifyRows(rows), maxColumnWidth),
-  maxColumnWidth: (rows) => R.apply(Math.max, colWidths(0, 0, stringifyRows(rows)))
+  maxColumnWidth: (rows) => arrMax(colWidths(0, 0, stringifyRows(rows)))
 }
