@@ -18,9 +18,10 @@ export const splitEvery = (w, a) => {
 export const last = (arr) => arr.slice(-1)
 export const head = (arr) => arr.slice(0, 1)
 export const tail = (arr) => arr.slice(1)
-export const concat = (one, two) => {
-  if (Array.isArray(one)) return [].concat(one, two)
-  return '' + one + two
+export const concat = function (one, two) {
+  const concatenated = [].concat(...arguments)
+  if (Array.isArray(one)) return concatenated
+  return concatenated.join('')
 }
 export const transpose = (arr) => {
   return arr[0].map((_, i) => {

@@ -10,15 +10,13 @@ const spacePad = padString(' ')
 const stringifyArray = R.cMap(JSON.stringify)
 const stringifyRows = (rows) => R.EitherArray(rows).fold(() => null, R.cMap(stringifyArray))
 const insertColSeparators = (arr) => '│' + arr.join('│') + '│'
-const getTopSeparatorLine = (colWidths) => getSeparatorLine('═', '╒', '╤', '╕', colWidths)
-const getThickSeparatorLine = (colWidths) => getSeparatorLine('═', '╞', '╪', '╡', colWidths)
-const getThinSeparatorLine = (colWidths) => getSeparatorLine('─', '├', '┼', '┤', colWidths)
-const getBottomSeparatorLine = (colWidths) => getSeparatorLine('─', '└', '┴', '┘', colWidths)
-const getSeparatorLine = (horChar, leftChar, crossChar, rightChar, colWidths) => {
-  return leftChar + colWidths.map(function (w) {
-    return padString(horChar)(w)
-  }).join(crossChar) + rightChar
+const getSeparatorLine = (horChar, leftChar, crossChar, rightChar) => (colWidths) => {
+  return R.concat(leftChar, colWidths.map((w) => padString(horChar)(w)).join(crossChar), rightChar)
 }
+const topSeparatorLine = getSeparatorLine('═', '╒', '╤', '╕')
+const thickSeparatorLine = getSeparatorLine('═', '╞', '╪', '╡')
+const thinSeparatorLine = getSeparatorLine('─', '├', '┼', '┤')
+const bottomSeparatorLine = getSeparatorLine('─', '└', '┴', '┘')
 
 const colWidths = (maxWidth, minWidth, input) => {
   const inputEither = R.EitherArray(input)
@@ -78,14 +76,14 @@ const main = (rows, maxColWidth = 30, minColWidth = 3) => {
   const heights = rowHeights(maxColWidth, rows)
   const norm = rowsToLines(maxColWidth, heights, widths, rows)
   const header = createLines(R.head(norm))
-  const separated = R.intersperse(getThinSeparatorLine(widths), R.tail(norm))
+  const separated = R.intersperse(thinSeparatorLine(widths), R.tail(norm))
   const lines = createLines(separated)
   return [
-    getTopSeparatorLine(widths),
+    topSeparatorLine(widths),
     ...header,
-    getThickSeparatorLine(widths),
+    thickSeparatorLine(widths),
     ...lines,
-    getBottomSeparatorLine(widths)
+    bottomSeparatorLine(widths)
   ].join('\n')
 }
 
