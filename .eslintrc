@@ -1,0 +1,14 @@
+{
+  "extends": "standard",
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "plugins": [
+    "compat",
+    "standard"
+  ],
+  "settings": {
+    "compiler": "babel"
+  }
+}
