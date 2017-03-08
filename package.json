@@ -10,13 +10,13 @@
   },
   "scripts": {
     "build": "npm run lint && npm run build:node && npm run build:browser && npm run build:react && npm run build:angular-1x",
-    "build:node": "./node_modules/.bin/babel src/ascii-data-table.js --out-file lib/ascii-data-table.js --source-maps",
+    "build:node": "babel src --out-dir lib --ignore entry --source-maps",
     "build:browser": "webpack -d --output-library AsciiTable",
     "build:angular-1x": "webpack -d --config webpack.angular.config.js",
     "build:react": "webpack -d --config webpack.react.config.js --output-library AsciiTableComponent",
     "prepublish": "npm run build",
-    "lint": "./node_modules/.bin/standard",
-    "test:node": "./node_modules/.bin/mocha --compilers js:babel-core/register --reporter dot test/**/*-test.js",
+    "lint": "standard",
+    "test:node": "mocha --compilers js:babel-core/register --reporter dot test/**/*-test.js",
     "test:browser": "./node_modules/karma/bin/karma start karma.config.js --single-run --no-auto-watch",
     "test": "npm run lint && npm run test:node && npm run test:browser",
     "test:watch": "onchange 'src/**/*.js' 'test/**/*-test.js' -- npm run test"
