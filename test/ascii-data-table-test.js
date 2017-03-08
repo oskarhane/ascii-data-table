@@ -217,6 +217,8 @@ describe('Ascii Tables', () => {
   })
 
   it('should find the max column width', () => {
+    checkColWidth(AsciiTable, null, 0)
+    checkColWidth(AsciiTable, true, 0)
     checkColWidth(AsciiTable, [['x', 'y'], [{a: 'a', b: 'b'}, 'ab'], ['c', {d: 'd'}]],
       JSON.stringify({a: 'a', b: 'b'}).length
     )

@@ -1,56 +1,60 @@
-import R from 'ramda'
+import * as R from './functions'
 import repeat from 'core-js/library/fn/string/repeat'
 
 const len = (val) => typeof val === 'undefined' ? 0 : ('' + val).length
-const padString = (character, width) => !width ? '' : repeat(character, width)
-const stringifyRows = (rows) => {
-  if (!Array.isArray(rows) || !rows.length) return []
-  return rows.map((row) => row.map(JSON.stringify))
-}
+const arrLen = (arr) => arr.length
+const arrMax = (arr) => R.apply(Math.max, arr)
+const matrixCol = (matrix) => (colNr) => R.pluck(colNr, matrix)
+const padString = (character) => (width) => !width ? '' : repeat(character, width)
+const spacePad = padString(' ')
+const stringifyArray = R.cMap(JSON.stringify)
+const stringifyRows = (rows) => R.EitherArray(rows).fold(() => null, R.cMap(stringifyArray))
 const insertColSeparators = (arr) => '│' + arr.join('│') + '│'
-const getTopSeparatorLine = (colWidths) => getSeparatorLine('═', '╒', '╤', '╕', colWidths)
-const getThickSeparatorLine = (colWidths) => getSeparatorLine('═', '╞', '╪', '╡', colWidths)
-const getThinSeparatorLine = (colWidths) => getSeparatorLine('─', '├', '┼', '┤', colWidths)
-const getBottomSeparatorLine = (colWidths) => getSeparatorLine('─', '└', '┴', '┘', colWidths)
-const getSeparatorLine = (horChar, leftChar, crossChar, rightChar, colWidths) => {
-  return leftChar + colWidths.map(function (w) {
-    return padString(horChar, w)
-  }).join(crossChar) + rightChar
+const getSeparatorLine = (horChar, leftChar, crossChar, rightChar) => (colWidths) => {
+  return R.concat(leftChar, colWidths.map((w) => padString(horChar)(w)).join(crossChar), rightChar)
 }
+const topSeparatorLine = getSeparatorLine('═', '╒', '╤', '╕')
+const thickSeparatorLine = getSeparatorLine('═', '╞', '╪', '╡')
+const thinSeparatorLine = getSeparatorLine('─', '├', '┼', '┤')
+const bottomSeparatorLine = getSeparatorLine('─', '└', '┴', '┘')
 
 const colWidths = (maxWidth, minWidth, input) => {
-  if (!Array.isArray(input)) {
-    return 0
-  }
-  return input[0].map((_, i) => {
-    const tCol = R.pluck(i, input).map((col) => len(col))
-    const measuredMax = Math.max(R.apply(Math.max, tCol), minWidth)
-    return measuredMax > maxWidth && maxWidth > 0 ? maxWidth : measuredMax
-  })
+  const inputEither = R.EitherArray(input)
+  const columnAtIndex = matrixCol(input)
+  const normalizeWidth = (w) => Math.min(Math.max(w, minWidth), (maxWidth || Infinity))
+  return inputEither
+          .map((r) => R.head(r)[0]) // Grab title row
+          .map(arrLen)              // Get the number of columns
+          .map(R.array)             // Create a new array with same number of columns
+          .map(R.cMap(columnAtIndex))  // Populate new array with columns from input
+          .map(R.cMap(R.cMap(len)))  // Measure the width of every column of every row
+          .map(R.cMap(arrMax))  // Grab the max width of every column
+          .map(R.cMap(normalizeWidth)) // Normalize width to be within limits
+          .fold(() => [0], R.id)  // default to 0
 }
 
 const rowHeights = (maxWidth, input) => {
   return input.map((row) => {
-    const maxLen = R.apply(Math.max, row.map((col) => len(col)))
+    const maxLen = arrMax(row.map(len))
     const numLines = Math.ceil(maxLen / maxWidth)
     return numLines
   })
 }
 
-const splitRowsToLines = (maxWidth, heights, widths, input) => {
+const rowsToLines = (maxWidth, heights, widths, input) => {
+  const columnToLinesWidths = columnToLines(widths, maxWidth)
   return input.map((row, i) => {
-    return row.map((col, colIndex) => {
-      let lines = R.splitEvery(maxWidth, col)
-      const lastLinesLen = len(R.last(lines))
-      if (lastLinesLen < widths[colIndex]) {
-        lines[lines.length - 1] = lines[lines.length - 1] + padString(' ', widths[colIndex] - lastLinesLen)
-      }
-      while (lines.length < heights[i]) {
-        lines = [].concat(...lines, [padString(' ', widths[colIndex])])
-      }
-      return lines
-    })
+    return row.map(columnToLinesWidths(heights[i]))
   })
+}
+
+const columnToLines = (widths, maxWidth) => (rowHeight) => (col, colIndex) => {
+  let lines = R.splitEvery(maxWidth, col)
+  lines[lines.length - 1] += spacePad(widths[colIndex] - len(R.last(lines)))
+  while (lines.length < rowHeight) {
+    lines.push(spacePad(widths[colIndex]))
+  }
+  return lines
 }
 
 const createLines = (rows) => {
@@ -63,29 +67,29 @@ const createLines = (rows) => {
   }, [])
 }
 
-const renderForWidth = (rows, maxColWidth = 30, minColWidth = 3) => {
+const main = (rows, maxColWidth = 30, minColWidth = 3) => {
   if (!Array.isArray(rows) || !rows.length) {
     return ''
   }
   maxColWidth = parseInt(maxColWidth)
   const widths = colWidths(maxColWidth, minColWidth, rows)
   const heights = rowHeights(maxColWidth, rows)
-  const norm = splitRowsToLines(maxColWidth, heights, widths, rows)
-  const header = createLines([R.head(norm)])
-  const separated = R.intersperse(getThinSeparatorLine(widths), R.tail(norm))
+  const norm = rowsToLines(maxColWidth, heights, widths, rows)
+  const header = createLines(R.head(norm))
+  const separated = R.intersperse(thinSeparatorLine(widths), R.tail(norm))
   const lines = createLines(separated)
   return [
-    getTopSeparatorLine(widths),
+    topSeparatorLine(widths),
     ...header,
-    getThickSeparatorLine(widths),
+    thickSeparatorLine(widths),
     ...lines,
-    getBottomSeparatorLine(widths)
+    bottomSeparatorLine(widths)
   ].join('\n')
 }
 
 export default {
   serializeData: (rows) => stringifyRows(rows),
-  tableFromSerializedData: (serializedRows, maxColumnWidth = 30) => renderForWidth(serializedRows, maxColumnWidth),
-  table: (rows, maxColumnWidth = 30) => renderForWidth(stringifyRows(rows), maxColumnWidth),
-  maxColumnWidth: (rows) => R.apply(Math.max, colWidths(0, 0, stringifyRows(rows)))
+  tableFromSerializedData: (serializedRows, maxColumnWidth = 30) => main(serializedRows, maxColumnWidth),
+  table: (rows, maxColumnWidth = 30) => main(stringifyRows(rows), maxColumnWidth),
+  maxColumnWidth: (rows) => arrMax(colWidths(0, 0, stringifyRows(rows)))
 }
